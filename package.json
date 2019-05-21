@@ -1,0 +1,19 @@
+{
+  "name": "posts_api",
+  "version": "1.0.0",
+  "description": "Use json-server to build a restful api ",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main.js",
+    "start": "node main.js"
+  },
+  "author": "Paul Nguyen",
+  "license": "MIT",
+  "dependencies": {
+    "json-server": "^0.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  }
+}
