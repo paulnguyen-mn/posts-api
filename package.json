@@ -11,6 +11,7 @@
   "author": "Paul Nguyen",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^8.0.0",
     "json-server": "^0.14.2"
   },
   "devDependencies": {
