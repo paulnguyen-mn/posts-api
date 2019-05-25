@@ -14,7 +14,7 @@ server.use(middlewares);
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser)
 server.use((req, res, next) => {
-  const now = new Date();
+  const now = Date.now();
   switch (req.method) {
     case 'POST': {
       req.body.createdAt = now;

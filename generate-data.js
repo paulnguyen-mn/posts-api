@@ -9,8 +9,8 @@ Array.from(new Array(50).keys()).map(() => {
     title: casual.title,
     author: casual.full_name,
     description: casual.words(50),
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
     imageUrl: `https://picsum.photos/id/${casual.integer(1, 1000)}/1368/400`,
   };
 
