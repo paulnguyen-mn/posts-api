@@ -1,33 +1,35 @@
-const casual = require('casual');
-const fs = require('fs');
-const axios = require('axios');
-const queryString = require('query-string');
+const casual = require("casual");
+const fs = require("fs");
+const axios = require("axios");
+const queryString = require("query-string");
 
 const axiosClient = axios.create({
-  baseURL: 'https://mapi.sendo.vn/mob',
+  baseURL: "https://mapi.sendo.vn/mob",
   headers: {
-    'content-type': 'application/json',
+    "content-type": "application/json",
   },
-  paramsSerializer: params => queryString.stringify(params),
+  paramsSerializer: (params) => queryString.stringify(params),
 });
 
-axiosClient.interceptors.response.use((response) => {
-  return response.data;
-}, (error) => {
-  console.log(error);
-});
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    console.log(error);
+  }
+);
 
 const searchProducts = async (queryParams) => {
-  const url = '/product/search';
+  const url = "/product/search";
   const response = await axiosClient.get(url, { params: queryParams });
   return response.data;
-}
+};
 
 const getProductDetail = async (productId) => {
   const url = `/product/${productId}/detail/`;
   return await axiosClient.get(url);
 };
-
 
 // ---------------
 
@@ -47,8 +49,7 @@ Array.from(new Array(50).keys()).map(() => {
   posts.push(post);
 });
 
-
-const S3_IMAGE_URL = 'https://media3.scdn.vn';
+const S3_IMAGE_URL = "https://media3.scdn.vn";
 const mapToProduct = (product) => {
   return {
     id: product.id,
@@ -59,7 +60,7 @@ const mapToProduct = (product) => {
     salePrice: product.final_price,
     isPromotion: product.is_promotion,
     promotionPercent: product.promotion_percent,
-    images: product.images.map(url => `${S3_IMAGE_URL}${url}`),
+    images: product.images.map((url) => `${S3_IMAGE_URL}${url}`),
     isFreeShip: product.is_free_ship,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -68,19 +69,55 @@ const mapToProduct = (product) => {
 
 // https://techinsight.com.vn/tai-lieu-huong-dan-su-dung-api-vietnam-ai-hackathon
 const categoryList = [
-  { id: casual.uuid, name: 'Thời trang', searchTerm: 'ao so mi nu', createdAt: Date.now(), updatedAt: Date.now(), },
-  { id: casual.uuid, name: 'Khẩu trang', searchTerm: 'khau trang', createdAt: Date.now(), updatedAt: Date.now(), },
-  { id: casual.uuid, name: 'Làm đẹp', searchTerm: 'lam dep', createdAt: Date.now(), updatedAt: Date.now(), },
-  { id: casual.uuid, name: 'Laptop', searchTerm: 'macbook', createdAt: Date.now(), updatedAt: Date.now(), },
-  { id: casual.uuid, name: 'Ổ cứng', searchTerm: 'o cung ssd', createdAt: Date.now(), updatedAt: Date.now(), },
-  { id: casual.uuid, name: 'Điện thoại', searchTerm: 'iphone', createdAt: Date.now(), updatedAt: Date.now(), },
+  {
+    id: casual.uuid,
+    name: "Thời trang",
+    searchTerm: "ao so mi nu",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: casual.uuid,
+    name: "Khẩu trang",
+    searchTerm: "khau trang",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: casual.uuid,
+    name: "Làm đẹp",
+    searchTerm: "lam dep",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: casual.uuid,
+    name: "Laptop",
+    searchTerm: "macbook",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: casual.uuid,
+    name: "Ổ cứng",
+    searchTerm: "o cung ssd",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: casual.uuid,
+    name: "Điện thoại",
+    searchTerm: "iphone",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
 ];
 const productList = [];
 const fetchProductList = async () => {
   // Loop through categories
   // Each cate, fetch list of product
-  // Slide the first 20 items 
-  // Loop through each item and get detail 
+  // Slide the first 20 items
+  // Loop through each item and get detail
   // Then map to our product
   // Finally add to product list
   for (const category of categoryList) {
@@ -89,7 +126,9 @@ const fetchProductList = async () => {
       q: category.searchTerm,
     };
 
-    const productIdList = (await searchProducts(queryParams)).slice(0, 20).map(item => item.id);
+    const productIdList = (await searchProducts(queryParams))
+      .slice(0, 20)
+      .map((item) => item.id);
     for (const productId of productIdList) {
       const productData = await getProductDetail(productId);
       const transformedProduct = mapToProduct(productData);
@@ -97,26 +136,45 @@ const fetchProductList = async () => {
 
       productList.push(transformedProduct);
     }
-    console.log('Done adding category', category.name, productIdList.length);
+    console.log("Done adding category", category.name, productIdList.length);
   }
-}
+};
+
+// Random 50 students data
+const students = [];
+Array.from(new Array(50).keys()).map(() => {
+  const post = {
+    id: casual.uuid,
+    name: casual.full_name,
+    age: casual.integer(18, 27),
+    gender: ["male", "female"][casual.integer(1, 100) % 2],
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    city: ["hcm", "hn", "dn", "pt", "td"][casual.integer(1, 100) % 5],
+    avatar: `https://picsum.photos/id/${casual.integer(1, 1000)}/300/300`,
+  };
+
+  students.push(post);
+});
 
 // --------------------
 // --------------------
 const main = async () => {
   await fetchProductList();
 
-
   // Setup db object
   const db = {
     posts,
     categories: categoryList,
     products: productList,
+    students,
   };
 
   // Save posts array to db.json file
-  fs.writeFile('db.json', JSON.stringify(db), () => {
-    console.log(`Generate ${posts.length} sample post records and saved in db.json!!! =))`);
+  fs.writeFile("db.json", JSON.stringify(db), () => {
+    console.log(
+      `Generate ${posts.length} sample post records and saved in db.json!!! =))`
+    );
   });
 };
 main();
