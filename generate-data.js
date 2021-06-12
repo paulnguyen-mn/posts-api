@@ -164,7 +164,7 @@ Array.from(new Array(50).keys()).map(() => {
     id: casual.uuid,
     name: casual.full_name,
     age: casual.integer(18, 27),
-    mark: Number.parseInt(casual.double(3, 10).toFixed(1)),
+    mark: Number.parseFloat(casual.double(3, 10).toFixed(1)),
     gender: ['male', 'female'][casual.integer(1, 100) % 2],
     createdAt: Date.now(),
     updatedAt: Date.now(),
