@@ -138,6 +138,25 @@ const fetchProductList = async () => {
   }
 };
 
+const cityList = [
+  {
+    code: 'hcm',
+    name: 'Hồ Chí Minh',
+  },
+  {
+    code: 'hn',
+    name: 'Hà Nội',
+  },
+  {
+    code: 'dn',
+    name: 'Đà Nẵng',
+  },
+  {
+    code: 'pt',
+    name: 'Phan Thiết',
+  },
+];
+
 // Random 50 students data
 const students = [];
 Array.from(new Array(50).keys()).map(() => {
@@ -149,7 +168,7 @@ Array.from(new Array(50).keys()).map(() => {
     gender: ['male', 'female'][casual.integer(1, 100) % 2],
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    city: ['hcm', 'hn', 'dn', 'pt', 'td'][casual.integer(1, 100) % 5],
+    city: ['hcm', 'hn', 'dn', 'pt'][casual.integer(1, 100) % 5],
   };
 
   students.push(post);
@@ -166,6 +185,7 @@ const main = async () => {
     categories: categoryList,
     products: productList,
     students,
+    cities: cityList,
   };
 
   // Save posts array to db.json file
