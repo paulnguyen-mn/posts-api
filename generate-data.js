@@ -2,6 +2,7 @@ const casual = require('casual');
 const fs = require('fs');
 const axios = require('axios');
 const queryString = require('query-string');
+const uniqid = require('uniqid');
 
 const axiosClient = axios.create({
   baseURL: 'https://mapi.sendo.vn/mob',
@@ -37,7 +38,7 @@ const getProductDetail = async (productId) => {
 const posts = [];
 Array.from(new Array(50).keys()).map(() => {
   const post = {
-    id: casual.uuid,
+    id: uniqid(),
     title: casual.title,
     author: casual.full_name,
     description: casual.words(50),
@@ -70,42 +71,42 @@ const mapToProduct = (product) => {
 // https://techinsight.com.vn/tai-lieu-huong-dan-su-dung-api-vietnam-ai-hackathon
 const categoryList = [
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Thời trang',
     searchTerm: 'ao so mi nu',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Khẩu trang',
     searchTerm: 'khau trang',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Làm đẹp',
     searchTerm: 'lam dep',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Laptop',
     searchTerm: 'macbook',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Ổ cứng',
     searchTerm: 'o cung ssd',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    id: casual.uuid,
+    id: uniqid(),
     name: 'Điện thoại',
     searchTerm: 'iphone',
     createdAt: Date.now(),
@@ -161,7 +162,7 @@ const cityList = [
 const students = [];
 Array.from(new Array(50).keys()).map(() => {
   const post = {
-    id: casual.uuid,
+    id: uniqid(),
     name: casual.full_name,
     age: casual.integer(18, 27),
     mark: Number.parseFloat(casual.double(3, 10).toFixed(1)),

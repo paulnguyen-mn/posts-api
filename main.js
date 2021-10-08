@@ -1,11 +1,28 @@
 require('dotenv').config();
 const jsonServer = require('json-server');
-const queryString = require('querystring');
+const queryString = require('query-string');
 const server = jsonServer.create();
 const router = jsonServer.router('db.json');
-const middlewares = jsonServer.defaults();
+const middlewares = jsonServer.defaults({
+  static: './public',
+});
 const yup = require('yup');
 const jwt = require('jsonwebtoken');
+const uniqid = require('uniqid');
+const multer = require('multer');
+
+// Setup upload config
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/posts');
+  },
+  filename: function (req, file, cb) {
+    const [fileName, fileExtension] = file.originalname.split('.');
+    cb(null, uniqid(`${fileName}-`, `.${fileExtension}`));
+  },
+});
+
+const upload = multer({ storage });
 
 const port = process.env.PORT || 3000;
 const PRIVATE_KEY = 'ae9468ec-c1fe-4cce-9772-cd899a2b496a';
@@ -32,7 +49,59 @@ server.use((req, res, next) => {
   next();
 });
 
-server.route('/api/login').post(async (req, res) => {
+function handleAddPost(req, res, next) {
+  const now = Date.now();
+
+  if (req.file?.filename) {
+    req.body.imageUrl = `${process.env.STATIC_URL}/posts/${req.file?.filename}`;
+  }
+
+  req.body.createdAt = now;
+  req.body.updatedAt = now;
+  next();
+}
+
+function handleUpdatePost(req, res, next) {
+  const now = Date.now();
+
+  if (req.file?.filename) {
+    req.body.imageUrl = `${process.env.STATIC_URL}/posts/${req.file?.filename}`;
+  }
+
+  req.body.updatedAt = now;
+  next();
+}
+
+function validateFormData(req, res, next) {
+  const contentType = req.headers['content-type'];
+  if (!contentType.includes('multipart/form-data')) {
+    return res
+      .status(400)
+      .json({ error: 'Invalid Content-Type, only multipart/form-data is supported.' });
+  }
+
+  next();
+}
+
+function handleUploadFile(req, res, next) {
+  if (!['PATCH', 'POST'].includes(req.method)) {
+    return res.status(404).json({ error: 'Not Found' });
+  }
+
+  if (req.method === 'PATCH') return handleUpdatePost(req, res, next);
+
+  return handleAddPost(req, res, next);
+}
+
+server.use(
+  '/api/with-thumbnail',
+  validateFormData,
+  upload.single('image'),
+  handleUploadFile,
+  router
+);
+
+server.post('/api/login', async (req, res) => {
   const loginSchema = yup.object().shape({
     username: yup
       .string()
@@ -61,7 +130,7 @@ server.route('/api/login').post(async (req, res) => {
 
 // private apis
 server.use(
-  '/private',
+  '/api/private',
   (req, res, next) => {
     try {
       const authHeader = req.headers.authorization;
@@ -90,7 +159,6 @@ router.render = (req, res) => {
   // Then we should include pagination in response
   // Right now, json-server just simply return a list of data without pagination data
   const totalCountHeader = headers['x-total-count'];
-  console.log('headers', totalCountHeader);
   if (req.method === 'GET' && totalCountHeader) {
     // Retrieve request pagination
     const queryParams = queryString.parse(req._parsedUrl.query);

@@ -16,8 +16,10 @@
     "dotenv": "^8.0.0",
     "json-server": "^0.17.0",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.3",
     "query-string": "^6.11.1",
     "querystring": "^0.2.0",
+    "uniqid": "^5.4.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {
