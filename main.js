@@ -10,11 +10,14 @@ const yup = require('yup');
 const jwt = require('jsonwebtoken');
 const uniqid = require('uniqid');
 const multer = require('multer');
+const fs = require('fs');
 
 // Setup upload config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/posts');
+    const path = './public/posts';
+    fs.mkdirSync(path, { recursive: true });
+    cb(null, path);
   },
   filename: function (req, file, cb) {
     const [fileName, fileExtension] = file.originalname.split('.');
