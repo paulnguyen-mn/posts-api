@@ -4,8 +4,12 @@ const queryString = require('querystring');
 const server = jsonServer.create();
 const router = jsonServer.router('db.json');
 const middlewares = jsonServer.defaults();
+const yup = require('yup');
+const jwt = require('jsonwebtoken');
 
 const port = process.env.PORT || 3000;
+const PRIVATE_KEY = 'ae9468ec-c1fe-4cce-9772-cd899a2b496a';
+const SECONDS_PER_DAY = 60 * 60 * 24;
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares);
@@ -27,6 +31,55 @@ server.use((req, res, next) => {
   // Continue to JSON Server router
   next();
 });
+
+server.route('/api/login').post(async (req, res) => {
+  const loginSchema = yup.object().shape({
+    username: yup
+      .string()
+      .required('Missing username')
+      .min(4, 'username should have at least 4 characters'),
+
+    password: yup
+      .string()
+      .required('Missing password')
+      .min(6, 'password should have at least 6 characters'),
+  });
+
+  try {
+    await loginSchema.validate(req.body);
+  } catch (error) {
+    res.status(400).jsonp({ error: error.errors?.[0] || 'Invalid username or password' });
+  }
+
+  // validate username and password
+  const { username, password } = req.body;
+  const token = jwt.sign({ sub: username }, PRIVATE_KEY, { expiresIn: SECONDS_PER_DAY });
+
+  // if valid, generate a JWT and return, set it expired in 1 day
+  res.jsonp({ access_token: token });
+});
+
+// private apis
+server.use(
+  '/private',
+  (req, res, next) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) return res.status(401).json({ message: 'You need to login to access' });
+
+      const [tokenType, accessToken] = authHeader.split(' ');
+      if (tokenType !== 'Bearer') {
+        return res.status(401).json({ message: 'Invalid token type. Only "Bearer" supported' });
+      }
+
+      jwt.verify(accessToken, PRIVATE_KEY);
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: 'Access token is not valid or expired.' });
+    }
+  },
+  router
+);
 
 // Customize response
 router.render = (req, res) => {
