@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const uniqid = require('uniqid');
 const multer = require('multer');
 const fs = require('fs');
+const casual = require('casual');
 
 // Setup upload config
 const storage = multer.diskStorage({
@@ -131,27 +132,42 @@ server.post('/api/login', async (req, res) => {
   res.jsonp({ access_token: token });
 });
 
-// private apis
-server.use(
-  '/api/private',
-  (req, res, next) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader) return res.status(401).json({ message: 'You need to login to access' });
+function protectedRoute(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: 'You need to login to access' });
 
-      const [tokenType, accessToken] = authHeader.split(' ');
-      if (tokenType !== 'Bearer') {
-        return res.status(401).json({ message: 'Invalid token type. Only "Bearer" supported' });
-      }
-
-      jwt.verify(accessToken, PRIVATE_KEY);
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Access token is not valid or expired.' });
+    const [tokenType, accessToken] = authHeader.split(' ');
+    if (tokenType !== 'Bearer') {
+      return res.status(401).json({ message: 'Invalid token type. Only "Bearer" supported' });
     }
-  },
-  router
-);
+
+    jwt.verify(accessToken, PRIVATE_KEY);
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Access token is not valid or expired.' });
+  }
+}
+
+server.get('/api/profile', protectedRoute, (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const [tokenType, accessToken] = authHeader.split(' ');
+    const payload = jwt.decode(accessToken);
+
+    return res.status(200).json({
+      username: payload.sub,
+      city: casual.city,
+      email: casual.email.toLowerCase(),
+    });
+  } catch (error) {
+    console.log('failed to parse token', error);
+    return res.status(400).json({ message: 'Failed to parse token.' });
+  }
+});
+
+// private apis
+server.use('/api/private', protectedRoute, router);
 
 // Customize response
 router.render = (req, res) => {
