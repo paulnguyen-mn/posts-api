@@ -127,9 +127,10 @@ server.post('/api/login', async (req, res) => {
   // validate username and password
   const { username, password } = req.body;
   const token = jwt.sign({ sub: username }, PRIVATE_KEY, { expiresIn: SECONDS_PER_DAY });
+  const expiredAt = new Date(Date.now() + SECONDS_PER_DAY * 1000).getTime();
 
   // if valid, generate a JWT and return, set it expired in 1 day
-  res.jsonp({ access_token: token });
+  res.jsonp({ access_token: token, expiredAt });
 });
 
 function protectedRoute(req, res, next) {
