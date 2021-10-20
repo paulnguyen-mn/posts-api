@@ -130,7 +130,7 @@ server.post('/api/login', async (req, res) => {
   const expiredAt = new Date(Date.now() + SECONDS_PER_DAY * 1000).getTime();
 
   // if valid, generate a JWT and return, set it expired in 1 day
-  res.jsonp({ access_token: token, expiredAt });
+  res.jsonp({ accessToken: token, expiredAt });
 });
 
 function protectedRoute(req, res, next) {
