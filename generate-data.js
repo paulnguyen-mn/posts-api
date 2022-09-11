@@ -175,6 +175,31 @@ Array.from(new Array(50).keys()).map(() => {
   students.push(post);
 });
 
+// Generate works
+const thumbnailList = [
+  'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item1_cbidwn.jpg',
+  'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item2_usidpx.jpg',
+  'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item3_jlfuun.jpg',
+];
+const fullDescription =
+  '<p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-1_zjggpj.jpg"alt="postimg1"width="100%"/></div><h1>Heading1</h1><h2>Heading2</h2><p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-2_zjggpj.jpg"alt="postimg1"width="100%"/></div><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-3_zjggpj.jpg"alt="postimg1"width="100%"/></div>';
+const workList = [];
+for (let i = 1; i <= 3; i++) {
+  const workItem = {
+    id: uniqid(),
+    title: casual.title,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    tagList: ['Design', 'Dashboard', 'User Experience'],
+    shortDescription:
+      'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
+    fullDescription,
+    thumbnailUrl: thumbnailList[i - 1],
+  };
+
+  workList.push(workItem);
+}
+
 // --------------------
 // --------------------
 const main = async () => {
@@ -187,6 +212,16 @@ const main = async () => {
     products: productList,
     students,
     cities: cityList,
+    works: workList,
+    tags: [
+      'Design',
+      'Dashboard',
+      'User Experience',
+      'Computer Science',
+      'ReactJS',
+      'Frontend Development',
+      'NextJS',
+    ],
   };
 
   // Save posts array to db.json file
