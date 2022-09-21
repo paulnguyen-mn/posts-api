@@ -130,7 +130,7 @@ server.post('/api/login', async (req, res) => {
   try {
     await loginSchema.validate(req.body)
   } catch (error) {
-    res.status(400).jsonp({ error: error.errors?.[0] || 'Invalid username or password' })
+    return res.status(400).jsonp({ error: error.errors?.[0] || 'Invalid username or password' })
   }
 
   // validate username and password
@@ -139,7 +139,7 @@ server.post('/api/login', async (req, res) => {
   const expiredAt = new Date(Date.now() + SECONDS_PER_DAY * 1000).getTime()
 
   // if valid, generate a JWT and return, set it expired in 1 day
-  res.jsonp({ accessToken: token, expiredAt })
+  return res.status(200).jsonp({ accessToken: token, expiredAt })
 })
 
 function protectedRoute(req, res, next) {
