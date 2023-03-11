@@ -34,7 +34,42 @@ function getStorage(storedPath) {
 }
 
 function upload(toPath) {
-  return multer({ storage: getStorage(toPath) })
+  return multer({
+    storage: getStorage(toPath),
+    limits: {
+      fileSize: 5000000, // 5mb = 5000000 bytes
+    },
+    fileFilter: (req, file, cb) => {
+      if (
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg'
+      ) {
+        cb(null, true)
+      } else {
+        cb(null, false)
+        return cb(new Error('Only .png, .jpg and .jpeg format allowed!'))
+      }
+    },
+  })
+}
+
+function uploadSingle(toPath, fieldName) {
+  return (req, res, next) => {
+    const action = upload(toPath).single(fieldName)
+
+    action(req, res, (error) => {
+      if (error) {
+        // A Multer error occurred when uploading.
+        return res.status(400).jsonp({
+          error: error.message || 'Failed to upload file with unknown reason.',
+        })
+      }
+
+      // Everything went fine.
+      next()
+    })
+  }
 }
 
 const port = process.env.PORT || 3000
@@ -109,7 +144,7 @@ function handleUploadFile(req, res, next) {
 server.use(
   '/api/with-thumbnail',
   validateFormData,
-  upload(PATHS.POSTS_FOLDER).single('image'),
+  uploadSingle(PATHS.POSTS_FOLDER, 'image'),
   handleUploadFile,
   router
 )
@@ -180,7 +215,7 @@ server.get('/api/profile', protectedRoute, (req, res) => {
 server.use('/api/private', protectedRoute, router)
 
 // Works APIs
-async function validateWorkPayload(req, res, next) {
+async function validateAddWorkPayload(req, res, next) {
   const workSchema = yup.object().shape({
     title: yup.string().required('Missing title'),
     shortDescription: yup
@@ -193,7 +228,30 @@ async function validateWorkPayload(req, res, next) {
   })
 
   try {
-    console.log('validate', req.body)
+    console.log('validate add', req.body)
+    await workSchema.validate(req.body)
+    next()
+  } catch (error) {
+    return res.status(400).jsonp({
+      error: error.errors?.[0] || 'Invalid payload, please help to double check and try again.',
+    })
+  }
+}
+
+async function validateUpdateWorkPayload(req, res, next) {
+  const workSchema = yup.object().shape({
+    title: yup.string().optional(),
+    shortDescription: yup
+      .string()
+      .optional()
+      .max(1000, 'shortDescription is too long (max length 1000)'),
+    fullDescription: yup.string().optional(),
+    thumbnailUrl: yup.string().optional(),
+    tagList: yup.array().optional().max(5, 'Too many tags (max is 5)'),
+  })
+
+  try {
+    console.log('validate update', req.body)
     await workSchema.validate(req.body)
     next()
   } catch (error) {
@@ -215,23 +273,40 @@ function addThumbnailUrl(req, res, next) {
   next()
 }
 
+function transformTagList(req, res, next) {
+  // req.body.tagList is a string
+  // convert 1,2,3 => ["1", "2", "3"]
+  const tagList = req.body.tagList
+
+  // in case tagList is null/undefined --> do nothing (FE want to ignore it)
+  // in case tagList is an empty string --> they want to reset it
+  if (tagList == null || typeof tagList !== 'string') return next()
+
+  req.body.tagList = tagList.split(',').filter((x) => Boolean(x))
+  next()
+}
+
 server.post(
   '/api/works',
   protectedRoute,
   validateFormData,
-  upload(PATHS.WORKS_FOLDER).single('thumbnail'),
+  uploadSingle(PATHS.WORKS_FOLDER, 'thumbnail'),
   addThumbnailUrl,
-  validateWorkPayload
+  transformTagList,
+  validateAddWorkPayload
 )
 
 server.patch(
-  '/api/works',
+  '/api/works/:id',
   protectedRoute,
   validateFormData,
-  upload(PATHS.WORKS_FOLDER).single('thumbnail'),
+  uploadSingle(PATHS.WORKS_FOLDER, 'thumbnail'),
   addThumbnailUrl,
-  validateWorkPayload
+  transformTagList,
+  validateUpdateWorkPayload
 )
+
+server.delete('api/works/:id', protectedRoute)
 
 // Customize response
 router.render = (req, res) => {
