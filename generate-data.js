@@ -1,8 +1,8 @@
-const casual = require('casual');
-const fs = require('fs');
-const axios = require('axios');
-const queryString = require('query-string');
-const uniqid = require('uniqid');
+const casual = require('casual')
+const fs = require('fs')
+const axios = require('axios')
+const queryString = require('query-string')
+const uniqid = require('uniqid')
 
 const axiosClient = axios.create({
   baseURL: 'https://mapi.sendo.vn/mob',
@@ -10,32 +10,32 @@ const axiosClient = axios.create({
     'content-type': 'application/json',
   },
   paramsSerializer: (params) => queryString.stringify(params),
-});
+})
 
 axiosClient.interceptors.response.use(
   (response) => {
-    return response.data;
+    return response.data
   },
   (error) => {
-    console.log(error);
+    console.log(error)
   }
-);
+)
 
 const searchProducts = async (queryParams) => {
-  const url = '/product/search';
-  const response = await axiosClient.get(url, { params: queryParams });
-  return response.data;
-};
+  const url = '/product/search'
+  const response = await axiosClient.get(url, { params: queryParams })
+  return response.data
+}
 
 const getProductDetail = async (productId) => {
-  const url = `/product/${productId}/detail/`;
-  return await axiosClient.get(url);
-};
+  const url = `/product/${productId}/detail/`
+  return await axiosClient.get(url)
+}
 
 // ---------------
 
 // Random 50 posts data
-const posts = [];
+const posts = []
 Array.from(new Array(50).keys()).map(() => {
   const post = {
     id: uniqid(),
@@ -45,12 +45,12 @@ Array.from(new Array(50).keys()).map(() => {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     imageUrl: `https://picsum.photos/id/${casual.integer(1, 1000)}/1368/400`,
-  };
+  }
 
-  posts.push(post);
-});
+  posts.push(post)
+})
 
-const S3_IMAGE_URL = 'https://media3.scdn.vn';
+const S3_IMAGE_URL = 'https://media3.scdn.vn'
 const mapToProduct = (product) => {
   return {
     id: product.id,
@@ -65,8 +65,8 @@ const mapToProduct = (product) => {
     isFreeShip: product.is_free_ship,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-  };
-};
+  }
+}
 
 // https://techinsight.com.vn/tai-lieu-huong-dan-su-dung-api-vietnam-ai-hackathon
 const categoryList = [
@@ -112,8 +112,8 @@ const categoryList = [
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
-];
-const productList = [];
+]
+const productList = []
 const fetchProductList = async () => {
   // Loop through categories
   // Each cate, fetch list of product
@@ -125,19 +125,19 @@ const fetchProductList = async () => {
     const queryParams = {
       p: 1,
       q: category.searchTerm,
-    };
-
-    const productIdList = (await searchProducts(queryParams)).slice(0, 20).map((item) => item.id);
-    for (const productId of productIdList) {
-      const productData = await getProductDetail(productId);
-      const transformedProduct = mapToProduct(productData);
-      transformedProduct.categoryId = category.id;
-
-      productList.push(transformedProduct);
     }
-    console.log('Done adding category', category.name, productIdList.length);
+
+    const productIdList = (await searchProducts(queryParams)).slice(0, 20).map((item) => item.id)
+    for (const productId of productIdList) {
+      const productData = await getProductDetail(productId)
+      const transformedProduct = mapToProduct(productData)
+      transformedProduct.categoryId = category.id
+
+      productList.push(transformedProduct)
+    }
+    console.log('Done adding category', category.name, productIdList.length)
   }
-};
+}
 
 const cityList = [
   {
@@ -156,10 +156,10 @@ const cityList = [
     code: 'pt',
     name: 'Phan Thiết',
   },
-];
+]
 
 // Random 50 students data
-const students = [];
+const students = []
 Array.from(new Array(50).keys()).map(() => {
   const post = {
     id: uniqid(),
@@ -170,40 +170,40 @@ Array.from(new Array(50).keys()).map(() => {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     city: ['hcm', 'hn', 'dn', 'pt'][casual.integer(1, 100) % 5],
-  };
+  }
 
-  students.push(post);
-});
+  students.push(post)
+})
 
 // Generate works
 const thumbnailList = [
   'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item1_cbidwn.jpg',
   'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item2_usidpx.jpg',
   'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item3_jlfuun.jpg',
-];
+]
 const fullDescription =
-  '<p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-1_zjggpj.jpg"alt="postimg1"width="100%"/></div><h1>Heading1</h1><h2>Heading2</h2><p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-2_zjggpj.jpg"alt="postimg1"width="100%"/></div><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-3_zjggpj.jpg"alt="postimg1"width="100%"/></div>';
-const workList = [];
-for (let i = 1; i <= 3; i++) {
+  '<p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-1_zjggpj.jpg"alt="postimg1"width="100%"/></div><h1>Heading1</h1><h2>Heading2</h2><p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-2_zjggpj.jpg"alt="postimg1"width="100%"/></div><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-3_zjggpj.jpg"alt="postimg1"width="100%"/></div>'
+const workList = []
+for (let i = 1; i <= 20; i++) {
   const workItem = {
     id: uniqid(),
     title: casual.title,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    tagList: ['Design', 'Dashboard', 'User Experience'],
+    tagList: ['Design', 'Dashboard', 'User Experience'].slice(0, 1 + Math.trunc(Math.random() * 2)),
     shortDescription:
       'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
     fullDescription,
-    thumbnailUrl: thumbnailList[i - 1],
-  };
+    thumbnailUrl: thumbnailList[i % 3],
+  }
 
-  workList.push(workItem);
+  workList.push(workItem)
 }
 
 // --------------------
 // --------------------
 const main = async () => {
-  await fetchProductList();
+  await fetchProductList()
 
   // Setup db object
   const db = {
@@ -222,11 +222,11 @@ const main = async () => {
       'Frontend Development',
       'NextJS',
     ],
-  };
+  }
 
   // Save posts array to db.json file
   fs.writeFile('db.json', JSON.stringify(db), () => {
-    console.log(`Generate ${posts.length} sample post records and saved in db.json!!! =))`);
-  });
-};
-main();
+    console.log(`Generate ${posts.length} sample post records and saved in db.json!!! =))`)
+  })
+}
+main()
