@@ -175,6 +175,16 @@ Array.from(new Array(50).keys()).map(() => {
   students.push(post)
 })
 
+const tagList = [
+  'Design',
+  'Dashboard',
+  'User Experience',
+  'Computer Science',
+  'ReactJS',
+  'Frontend Development',
+  'NextJS',
+]
+
 // Generate works
 const thumbnailList = [
   'https://res.cloudinary.com/kimwy/image/upload/v1648712410/learn-nextjs/item1_cbidwn.jpg',
@@ -185,12 +195,16 @@ const fullDescription =
   '<p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-1_zjggpj.jpg"alt="postimg1"width="100%"/></div><h1>Heading1</h1><h2>Heading2</h2><p>Ametminimmollitnondeseruntullamcoestsitaliquadolordoametsint.Velitofficiaconsequatduisenimvelitmollit.Exercitationveniamconsequatsuntnostrudamet.</p><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-2_zjggpj.jpg"alt="postimg1"width="100%"/></div><div><imgsrc="https://res.cloudinary.com/kimwy/image/upload/v1662798475/learn-nextjs/post-img-3_zjggpj.jpg"alt="postimg1"width="100%"/></div>'
 const workList = []
 for (let i = 1; i <= 20; i++) {
+  const from = casual.integer(0, tagList.length - 1)
+  const to = casual.integer(from, tagList.length - 1)
+  console.log('tag list slice', from, to, tagList.slice(from, to))
+
   const workItem = {
     id: uniqid(),
     title: casual.title,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    tagList: ['Design', 'Dashboard', 'User Experience'].slice(0, 1 + Math.trunc(Math.random() * 2)),
+    tagList: tagList.slice(from, to),
     shortDescription:
       'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
     fullDescription,
@@ -213,15 +227,7 @@ const main = async () => {
     students,
     cities: cityList,
     works: workList,
-    tags: [
-      'Design',
-      'Dashboard',
-      'User Experience',
-      'Computer Science',
-      'ReactJS',
-      'Frontend Development',
-      'NextJS',
-    ],
+    tags: tagList,
   }
 
   // Save posts array to db.json file
