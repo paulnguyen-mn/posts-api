@@ -228,6 +228,12 @@ const main = async () => {
     cities: cityList,
     works: workList,
     tags: tagList,
+    'public-profile': {
+      id: 'public-profile',
+      name: casual.full_name,
+      city: casual.city,
+      email: casual.email.toLowerCase(),
+    },
   }
 
   // Save posts array to db.json file
