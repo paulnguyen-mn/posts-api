@@ -214,6 +214,24 @@ for (let i = 1; i <= 20; i++) {
   workList.push(workItem)
 }
 
+// Generate tnxs
+const transactions = []
+for (let i = 0; i < 10; i++) {
+  const transaction = {
+    id: uniqid(),
+    date: casual.date('YYYY-MM-DD'),
+    amount: casual.double(0.01, 10000).toFixed(2),
+    description: casual.short_description,
+    sender: casual.full_name,
+    receiver: casual.full_name,
+    status: casual.random_element(['pending', 'processing', 'completed', 'cancelled']),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }
+
+  transactions.push(transaction)
+}
+
 // --------------------
 // --------------------
 const main = async () => {
@@ -228,6 +246,7 @@ const main = async () => {
     cities: cityList,
     works: workList,
     tags: tagList,
+    transactions,
     'public-profile': {
       id: 'public-profile',
       name: casual.full_name,
