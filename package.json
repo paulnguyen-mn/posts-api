@@ -11,18 +11,40 @@
   "author": "Paul Nguyen",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.22.0",
+    "axios": "^1.21.0",
     "casual": "^1.6.0",
     "dotenv": "^8.0.0",
-    "json-server": "^0.17.0",
-    "jsonwebtoken": "^8.5.1",
-    "multer": "^1.4.3",
-    "query-string": "^6.11.1",
-    "querystring": "^0.2.0",
+    "json-server": "^0.17.4",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
     "uniqid": "^5.4.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "nodemon": "^2.0.13"
+    "nodemon": "^3.1.10"
+  },
+  "resolutions": {
+    "**/express": "^4.22.3",
+    "**/body-parser": "^1.20.9",
+    "**/qs": "^6.17.1",
+    "**/proxy-addr": "^2.0.8",
+    "**/send": "^0.19.2",
+    "**/serve-static": "^1.16.3",
+    "**/path-to-regexp": "^0.1.13",
+    "**/cookie": "^0.7.2",
+    "**/compression": "^1.8.2",
+    "**/on-headers": "^1.1.0",
+    "**/morgan": "^1.12.1",
+    "**/lodash": "^4.18.1",
+    "**/lodash-es": "^4.18.1",
+    "**/moment": "^2.31.0",
+    "**/brace-expansion": "^1.1.21",
+    "**/braces": "^3.0.3",
+    "**/nanoid": "^3.3.20",
+    "**/got": "^11.8.6",
+    "**/http-cache-semantics": "^4.3.0",
+    "**/@babel/runtime": "^7.29.10",
+    "**/picomatch": "^2.3.2",
+    "**/minimatch": "^3.1.5"
   }
 }

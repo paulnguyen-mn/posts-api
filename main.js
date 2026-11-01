@@ -1,6 +1,5 @@
 require('dotenv').config()
 const jsonServer = require('json-server')
-const queryString = require('query-string')
 const server = jsonServer.create()
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults({
@@ -318,14 +317,14 @@ router.render = (req, res) => {
   // Right now, json-server just simply return a list of data without pagination data
   const totalCountHeader = headers['x-total-count']
   if (req.method === 'GET' && totalCountHeader) {
-    // Retrieve request pagination
-    const queryParams = queryString.parse(req._parsedUrl.query)
+    // Retrieve request pagination (native URLSearchParams, replaces query-string)
+    const queryParams = new URLSearchParams(req._parsedUrl.query)
 
     const result = {
       data: res.locals.data,
       pagination: {
-        _page: Number.parseInt(queryParams._page) || 1,
-        _limit: Number.parseInt(queryParams._limit) || 10,
+        _page: Number.parseInt(queryParams.get('_page')) || 1,
+        _limit: Number.parseInt(queryParams.get('_limit')) || 10,
         _totalRows: Number.parseInt(totalCountHeader),
       },
     }

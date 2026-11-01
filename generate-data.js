@@ -1,7 +1,6 @@
 const casual = require('casual')
 const fs = require('fs')
 const axios = require('axios')
-const queryString = require('query-string')
 const uniqid = require('uniqid')
 
 const axiosClient = axios.create({
@@ -9,7 +8,7 @@ const axiosClient = axios.create({
   headers: {
     'content-type': 'application/json',
   },
-  paramsSerializer: (params) => queryString.stringify(params),
+  paramsSerializer: (params) => new URLSearchParams(params).toString(),
 })
 
 axiosClient.interceptors.response.use(
